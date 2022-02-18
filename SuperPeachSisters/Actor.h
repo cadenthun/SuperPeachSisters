@@ -2,6 +2,8 @@
 #define ACTOR_H_
 
 #include "GraphObject.h"
+#include "GameConstants.h"
+#include "Level.h"
 
 // Students:  Add code to this file, Actor.cpp, StudentWorld.h, and StudentWorld.cpp
 
@@ -12,21 +14,20 @@ class Actor : public GraphObject
 {
     
 public:
-    Actor();
-    virtual void doSomething();
+    Actor(int imageID, int startX, int startY, int depth);
+    virtual void doSomething() = 0;
+    virtual void bonk();
+    virtual bool getPrevent();
+    virtual void setPrevent(bool prevent);
+    virtual void setDamageable(bool damageable);
+    virtual bool getDamageable();
+    bool getAlive();
     
 private:
-    
+    bool m_alive;
+    bool m_prevent;
+    bool m_damageable;
 };
-
-Actor::Actor()
-:GraphObject(<#int imageID#>, <#int startX#>, <#int startY#>)
-{
-    
-}
-
-void Actor::doSomething()
-{}
 
 //Actor class above
 //********************
@@ -36,17 +37,12 @@ void Actor::doSomething()
 class Block : public Actor
 {
 public:
-    Block();
+    Block(int startX, int startY);
+    virtual void doSomething();
+    virtual void bonk();
 private:
-    
+    bool m_goodieReleased;
 };
-
-Block::Block()
-{
-    
-}
-
-
 
 //Block class above
 //********************
@@ -56,14 +52,11 @@ Block::Block()
 class Peach : public Actor
 {
 public:
+    Peach(int startX, int startY);
     virtual void doSomething();
 private:
+    int hitPoints;
 };
-
-void Peach::doSomething()
-{
-    
-}
 
 //Peach class above
 //********************
