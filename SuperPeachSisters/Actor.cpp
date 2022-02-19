@@ -16,7 +16,6 @@ Actor::Actor(int imageID, double startX, double startY, StudentWorld* currStuden
     m_currStudentWorld = currStudentWorld;
 }
 
-void Actor::doSomething() {}
 void Actor::bonk() {}
 
 StudentWorld* Actor::getWorld()
@@ -61,7 +60,7 @@ Block::Block(double startX, double startY, StudentWorld* currStudentWorld)
 }
 
 void Block::doSomething()
-{}
+{return;}
 
 void Block::bonk()
 {
@@ -91,7 +90,7 @@ void Peach::doSomething()
          switch (ch)
          {
          case KEY_PRESS_LEFT:
-                 setDirection(180);
+                 setDirection(left);
                  if(getWorld()->overlap(getX() - 4, getY(), true))
                  {
                      break;

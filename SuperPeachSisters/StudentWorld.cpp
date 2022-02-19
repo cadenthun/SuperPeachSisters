@@ -81,6 +81,8 @@ int StudentWorld::move()
     //
     decLives();
     
+    m_peachPtr->doSomething();
+    
     for(vector<Actor*>::iterator it = m_container.begin(); it != m_container.end(); it++)
     {
         (*it)->doSomething();
@@ -93,11 +95,14 @@ bool StudentWorld::overlap(double x, double y, bool bonk)
     vector<Actor*>::iterator it;
     for(it = m_container.begin(); it != m_container.end(); it++)
     {
-        if(((*it)->getX() - x >= 0 && (*it)->getX() - x < SPRITE_WIDTH) || (x - (*it)->getX() < SPRITE_WIDTH && x - (*it)->getX() >= 0))
+        if ((*it)->getY() == y)
         {
-            if (bonk)
-                (*it)->bonk();
-            return true;
+            if(((*it)->getX() - x >= 0 && (*it)->getX() - x < SPRITE_WIDTH) || (x - (*it)->getX() < SPRITE_WIDTH && x - (*it)->getX() >= 0))
+            {
+                if (bonk)
+                    (*it)->bonk();
+                return true;
+            }
         }
     }
     return false;
