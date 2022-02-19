@@ -290,10 +290,6 @@
 				CODE_SIGN_IDENTITY = "-";
 				CODE_SIGN_STYLE = Automatic;
 				GCC_WARN_ABOUT_DEPRECATED_FUNCTIONS = YES;
-/* DAS: Let's see if these can be replaced by /usr/X11 versions
-				"HEADER_SEARCH_PATHS[arch=*]" = /usr/local/Cellar/freeglut/3.2.2/include/GL;
-				"LIBRARY_SEARCH_PATHS[arch=*]" = /usr/local/Cellar/freeglut/3.2.2/lib;
-*/
 				"HEADER_SEARCH_PATHS[arch=*]" = /usr/X11/include/GL;
 				"LIBRARY_SEARCH_PATHS[arch=*]" = /usr/X11/lib;
 				MACOSX_DEPLOYMENT_TARGET = 10.13;
@@ -309,10 +305,6 @@
 				CODE_SIGN_IDENTITY = "-";
 				CODE_SIGN_STYLE = Automatic;
 				GCC_WARN_ABOUT_DEPRECATED_FUNCTIONS = YES;
-/* DAS: Let's see if these can be replaced by /usr/X11 versions
-				"HEADER_SEARCH_PATHS[arch=*]" = /usr/local/Cellar/freeglut/3.2.2/include/GL;
-				"LIBRARY_SEARCH_PATHS[arch=*]" = /usr/local/Cellar/freeglut/3.2.2/lib;
-*/
 				"HEADER_SEARCH_PATHS[arch=*]" = /usr/X11/include/GL;
 				"LIBRARY_SEARCH_PATHS[arch=*]" = /usr/X11/lib;
 				MACOSX_DEPLOYMENT_TARGET = 10.13;

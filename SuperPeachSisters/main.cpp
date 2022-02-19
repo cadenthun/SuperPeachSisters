@@ -28,7 +28,7 @@ const string assetDirectory = "Assets";
 
 class GameWorld;
 
-GameWorld* createStudentWorld(string assetPath = "");
+GameWorld* createStudentWorld(string assetPath = assetDirectory);
 
 int main(int argc, char* argv[])
 {

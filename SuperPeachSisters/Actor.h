@@ -5,6 +5,8 @@
 #include "GameConstants.h"
 #include "Level.h"
 
+class StudentWorld;
+
 // Students:  Add code to this file, Actor.cpp, StudentWorld.h, and StudentWorld.cpp
 
 //********************
@@ -14,9 +16,10 @@ class Actor : public GraphObject
 {
     
 public:
-    Actor(int imageID, int startX, int startY, int depth);
+    Actor(int imageID, double startX, double startY, StudentWorld* currStudentWorld, int depth = 0);
     virtual void doSomething() = 0;
     virtual void bonk();
+    StudentWorld* getWorld();
     virtual bool getPrevent();
     virtual void setPrevent(bool prevent);
     virtual void setDamageable(bool damageable);
@@ -27,6 +30,7 @@ private:
     bool m_alive;
     bool m_prevent;
     bool m_damageable;
+    StudentWorld* m_currStudentWorld;
 };
 
 //Actor class above
@@ -37,7 +41,7 @@ private:
 class Block : public Actor
 {
 public:
-    Block(int startX, int startY);
+    Block(double startX, double startY, StudentWorld* currStudentWorld);
     virtual void doSomething();
     virtual void bonk();
 private:
@@ -52,10 +56,11 @@ private:
 class Peach : public Actor
 {
 public:
-    Peach(int startX, int startY);
+    Peach(double startX, double startY, StudentWorld* currStudentWorld);
     virtual void doSomething();
+    virtual void bonk();
 private:
-    int hitPoints;
+    int m_hitPoints;
 };
 
 //Peach class above

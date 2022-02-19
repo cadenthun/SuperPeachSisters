@@ -15,13 +15,13 @@ class StudentWorld : public GameWorld
 public:
   StudentWorld(std::string assetPath);
   StudentWorld* getWorld();
+  ~StudentWorld();
   virtual int init();
-  
   virtual int move();
   virtual void cleanUp();
+  bool overlap(double x, double y, bool bonk);
 
 private:
-    
     Peach* m_peachPtr;
     std::vector<Actor*> m_container;
     //container for storing actors
