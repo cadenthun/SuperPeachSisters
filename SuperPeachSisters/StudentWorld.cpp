@@ -94,14 +94,42 @@ int StudentWorld::move()
     // This code is here merely to allow the game to build, run, and terminate after you hit enter.
     // Notice that the return value GWSTATUS_PLAYER_DIED will cause our framework to end the current level.
     //
-    decLives();
+  //  decLives();
     
     m_peachPtr->doSomething();
     
-    for(vector<Actor*>::iterator it = m_container.begin(); it != m_container.end(); it++)
+    for(vector<Actor*>::iterator it = m_container.begin(); it != m_container.end();)
     {
-        (*it)->doSomething();
+        if((*it)->getAlive() == DEAD)
+        {
+            delete (*it);
+            m_container.erase(it);
+            continue;
+        }
+        it++;
     }
+    
+    for(vector<Actor*>::iterator it2 = m_container.begin(); it2 != m_container.end(); it2++)
+    {
+        (*it2)->doSomething();
+    }
+    
+    string starPowerText = "";
+    if(m_peachPtr->getStarPower() == POWERACTIVATED)
+        starPowerText = " StarPower!";
+    
+    string shootPowerText = "";
+    if(m_peachPtr->getShootPower() == POWERACTIVATED)
+        shootPowerText = " ShootPower!";
+    
+    string jumpPowerText = "";
+    if(m_peachPtr->getJumpPower() == POWERACTIVATED)
+        jumpPowerText = " JumpPower!";
+    
+    ostringstream screenText;
+    screenText << "Lives: " << getLives() << "  Level: " << getLevel() << "  Points: " << getScore() << starPowerText << shootPowerText << jumpPowerText;
+    setGameStatText(screenText.str());
+    
     if (m_levelComplete == LEVELCOMPLETE)
         return GWSTATUS_FINISHED_LEVEL;
     if (m_gameWon == GAMEWON)
@@ -167,6 +195,21 @@ void StudentWorld::setPeachAlive(bool lifeStatus)
 void StudentWorld::setPeachHP(int setVal)
 {
     m_peachPtr->setHP(setVal);
+}
+
+void StudentWorld::setPeachShootPower(bool shootPowerStatus)
+{
+    m_peachPtr->setShootPower(shootPowerStatus);
+}
+
+void StudentWorld::setPeachJumpPower(bool jumpPowerStatus)
+{
+    m_peachPtr->setJumpPower(jumpPowerStatus);
+}
+
+void StudentWorld::setPeachStarPower(bool starPowerStatus)
+{
+    m_peachPtr->setStarPower(starPowerStatus);
 }
 
 void StudentWorld::setLevelStatus(bool status)

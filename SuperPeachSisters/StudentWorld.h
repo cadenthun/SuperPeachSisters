@@ -25,6 +25,9 @@ public:
   bool overlapWithPeach(double x, double y);
   void setPeachAlive(bool alive);
   void setPeachHP(int setVal);
+  void setPeachShootPower(bool shootPowerStatus);
+  void setPeachJumpPower(bool jumpPowerStatus);
+  void setPeachStarPower(bool starPowerStatus);
   void setLevelStatus(bool status);
   void setGameStatus(bool status);
   
@@ -34,6 +37,9 @@ private:
     Peach* m_peachPtr;
     std::vector<Actor*> m_container;
     //container for storing actors
+    int m_numLives;
+    int m_levelNum;
+    
     bool m_levelComplete;
     bool m_gameWon;
 };

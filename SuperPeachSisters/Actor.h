@@ -27,6 +27,8 @@ const bool LEVELCOMPLETE = true;
 const bool LEVELNOTCOMPLETE = false;
 const bool GAMEWON = true;
 const bool GAMENOTWON = false;
+const bool POWERACTIVATED = true;
+const bool POWERDEACTIVATED = false;
 
 //for Special Blocks
 
@@ -232,12 +234,24 @@ public:
     virtual void doSomething();
     virtual void bonk();
     void setHP(int setVal);
+    void setShootPower(bool shootPowerStatus);
+    void setJumpPower(bool jumpPowerStatus);
+    void setStarPower(bool starPowerStatus);
+    bool getShootPower();
+    bool getJumpPower();
+    bool getStarPower();
 private:
     int m_hitPoints;
     bool m_shootPower;
     bool m_jumpPower;
     bool m_starPower;
     int m_remainingJumpDistance;
+    bool m_invincibility;
+    int m_remainingInvincibility;
+    bool m_tempInvincibility;
+    int m_remainingtempInvincibility;
+    bool m_inRechargeMode;
+    int m_remainingRechargeTime;
 };
 
 //Peach class above

@@ -135,8 +135,8 @@ void Goodie::doSomething()
     if (getWorld()->overlapWithPeach(getX(), getY()))
     {
         getWorld()->playSound(SOUND_PLAYER_POWERUP);
-        setAlive(DEAD);
         doDifferentiatedOverlapStuff(); //REMEMBER TO FILL THIS IN
+        setAlive(DEAD);
         return;
     }
     
@@ -179,7 +179,6 @@ StemmedGoodie::StemmedGoodie(int imageID, double startX, double startY, StudentW
 void StemmedGoodie::doDifferentiatedOverlapStuff()
 {
     getWorld()->setPeachHP(2);
-    
 }
 
 //StemmedGoodie class above
@@ -197,6 +196,7 @@ void FlowerGoodie::doDifferentiatedOverlapStuff()
 {
     StemmedGoodie::doDifferentiatedOverlapStuff();
     getWorld()->increaseScore(50);
+    getWorld()->setPeachShootPower(POWERACTIVATED);
     
 }
 
@@ -215,6 +215,7 @@ void MushroomGoodie::doDifferentiatedOverlapStuff()
 {
     StemmedGoodie::doDifferentiatedOverlapStuff();
     getWorld()->increaseScore(75);
+    getWorld()->setPeachJumpPower(POWERACTIVATED);
 }
 
 //MushroomGoodie class above
@@ -230,7 +231,8 @@ StarGoodie::StarGoodie(double startX, double startY, StudentWorld* currStudentWo
 
 void StarGoodie::doDifferentiatedOverlapStuff()
 {
-    
+    getWorld()->increaseScore(100);
+    getWorld()->setPeachStarPower(POWERACTIVATED);
 }
 
 //StarGoodie class above
@@ -362,7 +364,10 @@ void Peach::doSomething()
          case KEY_PRESS_UP:
                  if (getWorld()->overlap(getX(), getY() - 1, NOBONK, BLOCKABLE))
                  {
-                     m_remainingJumpDistance = 8;
+                     if(m_jumpPower == POWERACTIVATED)
+                         m_remainingJumpDistance = 12;
+                     else
+                         m_remainingJumpDistance = 8;
                      getWorld()->playSound(SOUND_PLAYER_JUMP);
                  }
          case KEY_PRESS_DOWN:
@@ -374,6 +379,36 @@ void Peach::doSomething()
          // etc…
          }
      }
+}
+
+void Peach::setShootPower(bool shootPowerStatus)
+{
+    m_shootPower = shootPowerStatus;
+}
+
+void Peach::setJumpPower(bool jumpPowerStatus)
+{
+    m_jumpPower = jumpPowerStatus;
+}
+
+void Peach::setStarPower(bool starPowerStatus)
+{
+    m_starPower = starPowerStatus;
+}
+
+bool Peach::getShootPower()
+{
+    return m_shootPower;
+}
+
+bool Peach::getJumpPower()
+{
+    return m_jumpPower;
+}
+
+bool Peach::getStarPower()
+{
+    return m_starPower;
 }
 
 void Peach::setHP(int setVal)
