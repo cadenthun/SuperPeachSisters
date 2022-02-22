@@ -7,8 +7,8 @@
 
 
 
-Actor::Actor(int imageID, double startX, double startY, StudentWorld* currStudentWorld, int depth)
-: GraphObject(imageID, startX, startY)
+Actor::Actor(int imageID, double startX, double startY, StudentWorld* currStudentWorld, int depth, int direction)
+: GraphObject(imageID, startX, startY, direction, depth)
 {
     m_alive = true;
     m_prevent = NOPREVENT;
@@ -124,7 +124,7 @@ Pipe::Pipe(double startX, double startY, StudentWorld* currStudentWorld)
 Goodie::Goodie(int imageID, double startX, double startY, StudentWorld* currStudentWorld)
 : Actor(imageID, startX, startY, currStudentWorld, 1)
 {
-    setPrevent(NOPREVENT);
+    setPrevent(NOPREVENT); 
     setDamageable(NOTDAMAGEABLE);
 }
 
@@ -138,7 +138,7 @@ void Goodie::doSomething()
         return;
     }
     
-    if(getWorld()->canFall(getX(), getY()))
+    if(getWorld()->canFall(getX(), getY(), 2))
     {
         moveTo(getX(), getY() - 2);
     }
@@ -154,7 +154,7 @@ void Goodie::doSomething()
     }
     if (getDirection() == left)
     {
-        if (getWorld()->overlap(getX() - 1, getY(), NOBONK, BLOCKABLE) || getWorld()->overlap(getX() - 2, getY(), NOBONK, BLOCKABLE))
+        if (getWorld()->overlap(getX() - 1, getY(), NOBONK, BLOCKABLE) || getWorld()->overlap(getX() - 2, getY(), NOBONK, BLOCKABLE)) //ygugg
         {
             setDirection(right);
             return;
@@ -242,6 +242,7 @@ Peach::Peach(double startX, double startY, StudentWorld* currStudentWorld)
     setPrevent(NOPREVENT);
     setDamageable(DAMAGEABLE);
     m_hitPoints = 1;
+    m_remainingJumpDistance = 0;
 }
 
 void Peach::bonk()
@@ -252,6 +253,29 @@ void Peach::doSomething()
     if (!getAlive())
         return;
     
+    (getWorld()->overlap(getX(), getY(), BONK));
+    
+    if (m_remainingJumpDistance == 0)
+    {
+        if (getWorld()->canFall(getX(), getY(), 3))
+            moveTo(getX(), getY() - 4);
+    }
+    
+    if (m_remainingJumpDistance > 0)
+    {
+        bool abort = false;
+        if (getWorld()->overlap(getX(), getY() + 4, BONK))
+        {
+            m_remainingJumpDistance = 0;
+            abort = true;
+        }
+        if (!abort)
+        {
+            moveTo(getX(), getY() + 4);
+            m_remainingJumpDistance--;
+        }
+    }
+    
     int ch;
     if (getWorld()->getKey(ch))
      {
@@ -260,7 +284,7 @@ void Peach::doSomething()
          {
          case KEY_PRESS_LEFT:
                  setDirection(left);
-                 if(getWorld()->overlap(getX() - 4, getY(), true))
+                 if(getWorld()->overlap(getX() - 4, getY(), BONK, BLOCKABLE))
                  {
                      break;
                  }
@@ -268,13 +292,18 @@ void Peach::doSomething()
          break;
          case KEY_PRESS_RIGHT:
                  setDirection(right);
-                 if(getWorld()->overlap(getX() + 4, getY(), true))
+                 if(getWorld()->overlap(getX() + 4, getY(), BONK, BLOCKABLE))
                  {
                      break;
                  }
                  moveTo(getX() + 4, getY());
          break;
          case KEY_PRESS_UP:
+                 if (getWorld()->overlap(getX(), getY() - 1, NOBONK, BLOCKABLE))
+                 {
+                     m_remainingJumpDistance = 8;
+                     getWorld()->playSound(SOUND_PLAYER_JUMP);
+                 }
          case KEY_PRESS_DOWN:
                  
          default: break;

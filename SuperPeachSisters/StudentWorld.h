@@ -20,7 +20,7 @@ public:
   virtual int move();
   virtual void cleanUp();
   bool overlap(double x, double y, bool bonk = NOBONK, bool prevent = PREVENT);
-  bool canFall(double x, double y);
+  bool canFall(double x, double y, int fallDistance);
   bool overlapWithPeach(double x, double y);
   void setPeachHP(int setVal);
 //  void releaseGoodie(double x, double y);

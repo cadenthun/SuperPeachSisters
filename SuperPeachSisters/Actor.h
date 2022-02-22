@@ -36,7 +36,7 @@ class Actor : public GraphObject
 {
     
 public:
-    Actor(int imageID, double startX, double startY, StudentWorld* currStudentWorld, int depth = 0);
+    Actor(int imageID, double startX, double startY, StudentWorld* currStudentWorld, int depth = 0, int direction = 0);
     virtual void doSomething() = 0;
     virtual void bonk();
     StudentWorld* getWorld();
@@ -191,6 +191,7 @@ private:
     bool m_shootPower;
     bool m_jumpPower;
     bool m_starPower;
+    int m_remainingJumpDistance;
 };
 
 //Peach class above
