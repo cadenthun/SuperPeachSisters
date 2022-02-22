@@ -29,6 +29,7 @@ const bool GAMEWON = true;
 const bool GAMENOTWON = false;
 const bool POWERACTIVATED = true;
 const bool POWERDEACTIVATED = false;
+const bool BONKEDBYPEACH = true;
 
 //for Special Blocks
 
@@ -232,6 +233,8 @@ class Enemy : public Actor
 public:
     Enemy(int imageID, double startX, double startY, StudentWorld* currStudentWorld);
     virtual void doSomething();
+    virtual void bonk();
+
     
 private:
     
@@ -240,9 +243,23 @@ private:
 //Enemy class above
 //********************
 //********************
+//MobileEnemy class below
+
+class MobileEnemy : public Enemy
+{
+public:
+    MobileEnemy(int imageID, double startX, double startY, StudentWorld* currStudentWorld);
+    virtual void doSomething();
+private:
+    
+};
+
+//MobileEnemy class above
+//********************
+//********************
 //Goomba class below
 
-class Goomba : public Enemy
+class Goomba : public MobileEnemy
 {
 public:
     Goomba(int startX, int startY, StudentWorld* currStudentWorld);
@@ -254,8 +271,12 @@ private:
 //********************
 //Koopa class below
 
-class Koopa : public Enemy
+class Koopa : public MobileEnemy
 {
+public:
+    Koopa(int startX, int startY, StudentWorld* currStudentWorld);
+    virtual void bonk();
+private:
     
 };
 

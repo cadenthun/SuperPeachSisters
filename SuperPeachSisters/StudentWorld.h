@@ -20,7 +20,7 @@ public:
   virtual int move();
   virtual void cleanUp();
   void releaseGoodie(double x, double y, int goodieType);
-  bool overlap(double x, double y, bool bonk = NOBONK, bool prevent = PREVENT);
+  bool overlap(double x, double y, bool bonk = NOBONK, bool prevent = PREVENT, bool bonkedByPeach = false);
   bool canFall(double x, double y, int fallDistance);
   bool overlapWithPeach(double x, double y, bool bonk);
   void setPeachAlive(bool alive);
@@ -28,6 +28,7 @@ public:
   void setPeachShootPower(bool shootPowerStatus);
   void setPeachJumpPower(bool jumpPowerStatus);
   void setPeachStarPower(bool starPowerStatus);
+  bool getPeachStarPower();
   void setLevelStatus(bool status);
   void setGameStatus(bool status);
   

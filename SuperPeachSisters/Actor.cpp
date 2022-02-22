@@ -301,6 +301,8 @@ void Mario::doSpecificStuff()
 Enemy::Enemy(int imageID, double startX, double startY, StudentWorld* currStudentWorld)
 : Actor(imageID, startX, startY, currStudentWorld, 0, (randInt(0, 1) * 180))
 {
+    setPrevent(NOPREVENT);
+    setDamageable(DAMAGEABLE);
 }
 
 void Enemy::doSomething()
@@ -310,6 +312,34 @@ void Enemy::doSomething()
     
     if (getWorld()->overlapWithPeach(getX(), getY(), BONK))
         return;
+}
+
+void Enemy::bonk()
+{
+    /*
+    if (bonkedByPeach)
+    {
+        if (getWorld()->getPeachStarPower() == POWERACTIVATED)
+        {
+            getWorld()->playSound(SOUND_PLAYER_KICK);
+            getWorld()->increaseScore(100);
+            setAlive(DEAD);
+        }
+    } */
+}
+
+//Enemy class above
+//********************
+//********************
+//MobileEnemy class below
+
+MobileEnemy::MobileEnemy(int imageID, double startX, double startY, StudentWorld* currStudentWorld)
+: Enemy(imageID, startX, startY, currStudentWorld)
+{}
+
+void MobileEnemy::doSomething()
+{
+    Enemy::doSomething();
     
     if (getDirection() == right)
     {
@@ -335,13 +365,13 @@ void Enemy::doSomething()
         moveTo(getX() - 1, getY());
 }
 
-//Enemy class above
+//MobileEnemy class above
 //********************
 //********************
 //Goomba class below
 
 Goomba::Goomba(int startX, int startY, StudentWorld* currStudentWorld)
-: Enemy(IID_GOOMBA, startX, startY, currStudentWorld)
+: MobileEnemy(IID_GOOMBA, startX, startY, currStudentWorld)
 {
 
 }
@@ -351,7 +381,15 @@ Goomba::Goomba(int startX, int startY, StudentWorld* currStudentWorld)
 //********************
 //Koopa class below
 
+Koopa::Koopa(int startX, int startY, StudentWorld* currStudentWorld)
+: MobileEnemy(IID_KOOPA, startX, startY, currStudentWorld)
+{}
 
+void Koopa::bonk()
+{
+    Enemy::bonk();
+    //introduce shell object
+}
 
 //Koopa class above
 //********************
@@ -388,7 +426,7 @@ void Peach::doSomething()
     if (m_remainingInvincibility > 0)
         m_remainingInvincibility --;
     
-    (getWorld()->overlap(getX(), getY(), BONK));
+    (getWorld()->overlap(getX(), getY(), BONK, NOTBLOCKABLE, BONKEDBYPEACH));
     
     if (m_remainingJumpDistance == 0)
     {

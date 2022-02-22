@@ -79,8 +79,13 @@ int StudentWorld::init()
                         break;
                     case Level::mario:
                         m_container.push_back(new Mario(i * SPRITE_WIDTH, j * SPRITE_HEIGHT, this));
+                        break;
                     case Level::goomba:
                         m_container.push_back(new Goomba(i * SPRITE_WIDTH, j * SPRITE_HEIGHT, this));
+                        break;
+                    case Level::koopa:
+                        m_container.push_back(new Koopa(i * SPRITE_WIDTH, j * SPRITE_HEIGHT, this));
+                        break;
                      default: break;
                      }
                 }
@@ -155,7 +160,7 @@ void StudentWorld::releaseGoodie(double x, double y, int goodieType)
     }
 }
 
-bool StudentWorld::overlap(double x, double y, bool bonk, bool blockable)
+bool StudentWorld::overlap(double x, double y, bool bonk, bool blockable, bool bonkedByPeach)
 {
     
     vector<Actor*>::iterator it;
@@ -217,6 +222,11 @@ void StudentWorld::setPeachJumpPower(bool jumpPowerStatus)
 void StudentWorld::setPeachStarPower(bool starPowerStatus)
 {
     m_peachPtr->setStarPower(starPowerStatus);
+}
+
+bool StudentWorld::getPeachStarPower()
+{
+    return m_peachPtr->getStarPower();
 }
 
 void StudentWorld::setLevelStatus(bool status)
