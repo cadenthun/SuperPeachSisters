@@ -90,9 +90,11 @@ void Block::bonk()
 //********************
 //SpecialBlock class below
 
-SpecialBlock::SpecialBlock(double startX, double startY, StudentWorld* currStudentWorld)
+SpecialBlock::SpecialBlock(double startX, double startY, StudentWorld* currStudentWorld, int goodieHeld)
 : Block(startX, startY, currStudentWorld)
 {
+    m_goodieHeld = goodieHeld;
+    m_beenBonked = false;
 }
 
 void SpecialBlock::bonk()
@@ -103,7 +105,7 @@ void SpecialBlock::bonk()
         return;
     }
     getWorld()->playSound(SOUND_POWERUP_APPEARS);
-  //  getWorld()->releaseGoodie(getX(), getY());
+    getWorld()->releaseGoodie(getX(), getY(), m_goodieHeld);
     m_beenBonked = true;
 }
 
@@ -234,7 +236,66 @@ void StarGoodie::doDifferentiatedOverlapStuff()
 //StarGoodie class above
 //********************
 //********************
+//Goal class below
+
+Goal::Goal(int imageID, double startX, double startY, StudentWorld* currStudentWorld)
+: Actor(imageID, startX, startY, currStudentWorld, 1)
+{
+    setPrevent(NOPREVENT);
+    setDamageable(NOTDAMAGEABLE);
+}
+
+void Goal::doSomething()
+{
+    if (!getAlive())
+        return;
+    if (getWorld()->overlapWithPeach(getX(), getY()))
+    {
+        getWorld()->increaseScore(1000);
+        setAlive(DEAD);
+        doSpecificStuff();
+    }
+}
+
+//Goal class above
+//********************
+//********************
+//Flag class below
+
+Flag::Flag(double startX, double startY, StudentWorld* currStudentWorld)
+: Goal(IID_FLAG, startX, startY, currStudentWorld)
+{}
+
+void Flag::doSpecificStuff()
+{
+    if (getWorld()->overlapWithPeach(getX(), getY()))
+    {
+        getWorld()->setLevelStatus(LEVELCOMPLETE);
+    }
+}
+
+//Flag class above
+//********************
+//********************
+//Mario class below
+
+Mario::Mario(double startX, double startY, StudentWorld* currStudentWorld)
+: Goal(IID_MARIO, startX, startY, currStudentWorld)
+{}
+
+void Mario::doSpecificStuff()
+{
+    if (getWorld()->overlapWithPeach(getX(), getY()))
+    {
+        getWorld()->setGameStatus(GAMEWON);
+    }
+}
+
+//Mario class above
+//********************
+//********************
 //Peach class below
+
 
 Peach::Peach(double startX, double startY, StudentWorld* currStudentWorld)
 : Actor(IID_PEACH, startX, startY, currStudentWorld)

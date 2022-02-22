@@ -19,16 +19,23 @@ public:
   virtual int init();
   virtual int move();
   virtual void cleanUp();
+  void releaseGoodie(double x, double y, int goodieType);
   bool overlap(double x, double y, bool bonk = NOBONK, bool prevent = PREVENT);
   bool canFall(double x, double y, int fallDistance);
   bool overlapWithPeach(double x, double y);
+  void setPeachAlive(bool alive);
   void setPeachHP(int setVal);
+  void setLevelStatus(bool status);
+  void setGameStatus(bool status);
+  
 //  void releaseGoodie(double x, double y);
 
 private:
     Peach* m_peachPtr;
     std::vector<Actor*> m_container;
     //container for storing actors
+    bool m_levelComplete;
+    bool m_gameWon;
 };
 
 #endif // STUDENTWORLD_H_

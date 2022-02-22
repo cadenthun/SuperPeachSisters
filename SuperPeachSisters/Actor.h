@@ -12,6 +12,7 @@ class StudentWorld;
 //********************
 //Constants below
 
+enum goodieType {flower, mushroom, star};
 const bool ALIVE = true;
 const bool DEAD = false;
 const bool BONK = true;
@@ -22,6 +23,10 @@ const bool DAMAGEABLE = true;
 const bool NOTDAMAGEABLE = false;
 const bool BLOCKABLE = true;
 const bool NOTBLOCKABLE = false;
+const bool LEVELCOMPLETE = true;
+const bool LEVELNOTCOMPLETE = false;
+const bool GAMEWON = true;
+const bool GAMENOTWON = false;
 
 //for Special Blocks
 
@@ -89,10 +94,11 @@ private:
 class SpecialBlock : public Block
 {
 public:
-    SpecialBlock(double startX, double startY, StudentWorld* currStudentWorld);
+    SpecialBlock(double startX, double startY, StudentWorld* currStudentWorld, int goodieHeld);
     virtual void bonk();
 private:
     bool m_beenBonked;
+    int m_goodieHeld;
 };
 
 //SpecialBlock class above
@@ -175,6 +181,46 @@ private:
 };
 
 //StarGoodie class above
+//********************
+//********************
+//Goal class below
+
+class Goal : public Actor
+{
+public:
+    Goal(int imageID, double startX, double startY, StudentWorld* currStudentWorld);
+    virtual void doSomething();
+    virtual void doSpecificStuff() = 0;
+private:
+};
+
+//Goal class above
+//********************
+//********************
+//Flag class below
+
+class Flag : public Goal
+{
+public:
+    Flag(double startX, double startY, StudentWorld* currStudentWorld);
+    virtual void doSpecificStuff();
+private:
+};
+
+//Flag class above
+//********************
+//********************
+//Mario class below
+
+class Mario : public Goal
+{
+public:
+    Mario(double startX, double startY, StudentWorld* currStudentWorld);
+    virtual void doSpecificStuff();
+private:
+};
+
+//Mario class above
 //********************
 //********************
 //Peach class below

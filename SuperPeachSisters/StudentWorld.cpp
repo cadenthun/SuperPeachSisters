@@ -20,7 +20,8 @@ GameWorld* createStudentWorld(string assetPath)
 StudentWorld::StudentWorld(string assetPath)
 : GameWorld(assetPath)
 {
-    
+    m_levelComplete = LEVELNOTCOMPLETE;
+    m_gameWon = GAMENOTWON;
 }
 
 StudentWorld::~StudentWorld()
@@ -62,20 +63,22 @@ int StudentWorld::init()
                             m_container.push_back(new Block(i * SPRITE_WIDTH, j * SPRITE_HEIGHT, this));
                             break;
                      case Level::star_goodie_block:
-                            m_container.push_back(new Block(i * SPRITE_WIDTH, j * SPRITE_HEIGHT, this));
-                            m_container.push_back(new StarGoodie(i * SPRITE_WIDTH, (j + 1) * SPRITE_HEIGHT, this));
-
+                            m_container.push_back(new SpecialBlock(i * SPRITE_WIDTH, j * SPRITE_HEIGHT, this, star));
                             break;
                      case Level::mushroom_goodie_block:
-                            m_container.push_back(new Block(i * SPRITE_WIDTH, j * SPRITE_HEIGHT, this));
-                            m_container.push_back(new MushroomGoodie(i * SPRITE_WIDTH, (j + 1) * SPRITE_HEIGHT, this));
+                            m_container.push_back(new SpecialBlock(i * SPRITE_WIDTH, j * SPRITE_HEIGHT, this, mushroom));
                             break;
                      case Level::flower_goodie_block:
-                        m_container.push_back(new Block(i * SPRITE_WIDTH, j * SPRITE_HEIGHT, this));
-                        m_container.push_back(new FlowerGoodie(i * SPRITE_WIDTH, (j + 1) * SPRITE_HEIGHT, this));
+                        m_container.push_back(new SpecialBlock(i * SPRITE_WIDTH, j * SPRITE_HEIGHT, this, flower));
                         break;
-                        case Level::pipe:
-                            m_container.push_back(new Pipe(i * SPRITE_WIDTH, j * SPRITE_HEIGHT, this));
+                    case Level::pipe:
+                        m_container.push_back(new Pipe(i * SPRITE_WIDTH, j * SPRITE_HEIGHT, this));
+                        break;
+                    case Level::flag:
+                        m_container.push_back(new Flag(i * SPRITE_WIDTH, j * SPRITE_HEIGHT, this));
+                        break;
+                    case Level::mario:
+                        m_container.push_back(new Mario(i * SPRITE_WIDTH, j * SPRITE_HEIGHT, this));
                      default: break;
                      }
                 }
@@ -99,7 +102,27 @@ int StudentWorld::move()
     {
         (*it)->doSomething();
     }
+    if (m_levelComplete == LEVELCOMPLETE)
+        return GWSTATUS_FINISHED_LEVEL;
+    if (m_gameWon == GAMEWON)
+        return GWSTATUS_PLAYER_WON;
     return GWSTATUS_CONTINUE_GAME;
+}
+
+void StudentWorld::releaseGoodie(double x, double y, int goodieType)
+{
+    switch(goodieType)
+    {
+        case flower:
+            m_container.push_back(new FlowerGoodie(x, y + 8, this));
+            break;
+        case mushroom:
+            m_container.push_back(new MushroomGoodie(x, y + 8, this));
+            break;
+        case star:
+            m_container.push_back(new StarGoodie(x, y + 8, this));
+            break;
+    }
 }
 
 bool StudentWorld::overlap(double x, double y, bool bonk, bool blockable)
@@ -136,11 +159,25 @@ bool StudentWorld::overlapWithPeach(double x, double y)
     return false;
 }
 
+void StudentWorld::setPeachAlive(bool lifeStatus)
+{
+    m_peachPtr->setAlive(lifeStatus);
+}
+
 void StudentWorld::setPeachHP(int setVal)
 {
     m_peachPtr->setHP(setVal);
 }
 
+void StudentWorld::setLevelStatus(bool status)
+{
+    m_levelComplete = status;
+}
+
+void StudentWorld::setGameStatus(bool status)
+{
+    m_gameWon = status;
+}
 
 void StudentWorld::cleanUp()
 {
