@@ -10,6 +10,26 @@ class StudentWorld;
 // Students:  Add code to this file, Actor.cpp, StudentWorld.h, and StudentWorld.cpp
 
 //********************
+//Constants below
+
+const bool ALIVE = true;
+const bool DEAD = false;
+const bool BONK = true;
+const bool NOBONK = false;
+const bool PREVENT = true;
+const bool NOPREVENT = false;
+const bool DAMAGEABLE = true;
+const bool NOTDAMAGEABLE = false;
+const bool BLOCKABLE = true;
+const bool NOTBLOCKABLE = false;
+
+//for Special Blocks
+
+//Constants above
+//********************
+
+
+//********************
 //Actor class below
 
 class Actor : public GraphObject
@@ -20,15 +40,16 @@ public:
     virtual void doSomething() = 0;
     virtual void bonk();
     StudentWorld* getWorld();
-    virtual bool getPrevent();
-    virtual void setPrevent(bool prevent);
-    virtual void setDamageable(bool damageable);
-    virtual bool getDamageable();
+    bool getPrevent();
+    void setPrevent(bool prevent);
+    void setDamageable(bool damageable);
+    bool getDamageable();
     bool getAlive();
+    void setAlive(bool alive);
     
 private:
     bool m_alive;
-    bool m_prevent;
+    bool m_prevent; //true if actor will prevent other actors from moving to the spot it currently occupies
     bool m_damageable;
     StudentWorld* m_currStudentWorld;
 };
@@ -36,19 +57,124 @@ private:
 //Actor class above
 //********************
 //********************
-//Block class below
+//Ground class below
 
-class Block : public Actor
+class Ground: public Actor
 {
 public:
-    Block(double startX, double startY, StudentWorld* currStudentWorld);
+    Ground(int imageID, double startX, double startY, StudentWorld* currStudentWorld);
     virtual void doSomething();
     virtual void bonk();
 private:
-    bool m_goodieReleased;
+};
+
+//Ground class above
+//********************
+//********************
+//Block class below
+
+class Block : public Ground
+{
+public:
+    Block(double startX, double startY, StudentWorld* currStudentWorld);
+    virtual void bonk();
+private:
 };
 
 //Block class above
+//********************
+//********************
+//SpecialBlock class below
+
+class SpecialBlock : public Block
+{
+public:
+    SpecialBlock(double startX, double startY, StudentWorld* currStudentWorld);
+    virtual void bonk();
+private:
+    bool m_beenBonked;
+};
+
+//SpecialBlock class above
+//********************
+//********************
+//Pipe class below
+
+class Pipe : public Ground
+{
+public:
+    Pipe(double startX, double startY, StudentWorld* currStudentWorld);
+};
+
+//Pipe class above
+//********************
+//********************
+//Goodie class below
+
+class Goodie : public Actor
+{
+public:
+    Goodie(int imageID, double startX, double startY, StudentWorld* currStudentWorld);
+    void doSomething();
+    virtual void doDifferentiatedOverlapStuff() = 0;
+    
+private:
+    
+};
+
+//Goodie class above
+//********************
+//********************
+//StemmedGoodie class below
+
+class StemmedGoodie : public Goodie
+{
+public:
+    StemmedGoodie(int imageID, double startX, double startY, StudentWorld* currStudentWorld);
+    virtual void doDifferentiatedOverlapStuff();
+private:
+};
+
+//StemmedGoodie class above
+//********************
+//********************
+//FlowerGoodie class below
+
+class FlowerGoodie : public StemmedGoodie
+{
+public:
+    FlowerGoodie(double startX, double startY, StudentWorld* currStudentWorld);
+    virtual void doDifferentiatedOverlapStuff();
+private:
+};
+
+//FlowerGoodie class above
+//********************
+//********************
+//MushroomGoodie class below
+
+class MushroomGoodie : public StemmedGoodie
+{
+public:
+    MushroomGoodie(double startX, double startY, StudentWorld* currStudentWorld);
+    virtual void doDifferentiatedOverlapStuff();
+private:
+};
+
+//MushroomGoodie class above
+//********************
+//********************
+//StarGoodie class below
+
+class StarGoodie : public Goodie
+{
+public:
+    StarGoodie(double startX, double startY, StudentWorld* currStudentWorld);
+    virtual void doDifferentiatedOverlapStuff();
+private:
+};
+
+//StarGoodie class above
 //********************
 //********************
 //Peach class below
@@ -59,8 +185,12 @@ public:
     Peach(double startX, double startY, StudentWorld* currStudentWorld);
     virtual void doSomething();
     virtual void bonk();
+    void setHP(int setVal);
 private:
     int m_hitPoints;
+    bool m_shootPower;
+    bool m_jumpPower;
+    bool m_starPower;
 };
 
 //Peach class above

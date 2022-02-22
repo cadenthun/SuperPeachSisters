@@ -11,8 +11,8 @@ Actor::Actor(int imageID, double startX, double startY, StudentWorld* currStuden
 : GraphObject(imageID, startX, startY)
 {
     m_alive = true;
-    m_prevent = false;
-    m_damageable = false;
+    m_prevent = NOPREVENT;
+    m_damageable = NOTDAMAGEABLE;
     m_currStudentWorld = currStudentWorld;
 }
 
@@ -47,20 +47,38 @@ bool Actor::getAlive()
     return m_alive;
 }
 
+void Actor::setAlive(bool alive)
+{
+    m_alive = alive;
+}
+
 //Actor class above
+//********************
+//********************
+//Ground class below
+
+Ground::Ground(int imageID, double startX, double startY, StudentWorld* currStudentWorld)
+: Actor(imageID, startX, startY, currStudentWorld, 2)
+{
+    setPrevent(PREVENT);
+    setDamageable(NOTDAMAGEABLE);
+}
+
+void Ground::doSomething()
+{}
+
+void Ground::bonk()
+{}
+
+//Ground class above
 //********************
 //********************
 //Block class below
 
 Block::Block(double startX, double startY, StudentWorld* currStudentWorld)
-: Actor(IID_BLOCK, startX, startY, currStudentWorld, 2)
+: Ground(IID_BLOCK, startX, startY, currStudentWorld)
 {
-    Actor::setPrevent(true);
-    m_goodieReleased = false;
 }
-
-void Block::doSomething()
-{return;}
 
 void Block::bonk()
 {
@@ -70,11 +88,159 @@ void Block::bonk()
 //Block class above
 //********************
 //********************
+//SpecialBlock class below
+
+SpecialBlock::SpecialBlock(double startX, double startY, StudentWorld* currStudentWorld)
+: Block(startX, startY, currStudentWorld)
+{
+}
+
+void SpecialBlock::bonk()
+{
+    if (m_beenBonked)
+    {
+        Block::bonk();
+        return;
+    }
+    getWorld()->playSound(SOUND_POWERUP_APPEARS);
+  //  getWorld()->releaseGoodie(getX(), getY());
+    m_beenBonked = true;
+}
+
+//SpecialBlock class above
+//********************
+//********************
+//Pipe class below
+
+Pipe::Pipe(double startX, double startY, StudentWorld* currStudentWorld)
+: Ground(IID_PIPE, startX, startY, currStudentWorld)
+{}
+
+//Pipe class above
+//********************
+//********************
+//Goodie class below
+
+Goodie::Goodie(int imageID, double startX, double startY, StudentWorld* currStudentWorld)
+: Actor(imageID, startX, startY, currStudentWorld, 1)
+{
+    setPrevent(NOPREVENT);
+    setDamageable(NOTDAMAGEABLE);
+}
+
+void Goodie::doSomething()
+{
+    if (getWorld()->overlapWithPeach(getX(), getY()))
+    {
+        getWorld()->playSound(SOUND_PLAYER_POWERUP);
+        setAlive(DEAD);
+        doDifferentiatedOverlapStuff(); //REMEMBER TO FILL THIS IN
+        return;
+    }
+    
+    if(getWorld()->canFall(getX(), getY()))
+    {
+        moveTo(getX(), getY() - 2);
+    }
+    
+    if (getDirection() == right)
+    {
+        if (getWorld()->overlap(getX() + 1, getY(), NOBONK, BLOCKABLE) || getWorld()->overlap(getX() + 2, getY(), NOBONK, BLOCKABLE))
+        {
+            setDirection(left);
+            return;
+        }
+        moveTo(getX() + 2, getY());
+    }
+    if (getDirection() == left)
+    {
+        if (getWorld()->overlap(getX() - 1, getY(), NOBONK, BLOCKABLE) || getWorld()->overlap(getX() - 2, getY(), NOBONK, BLOCKABLE))
+        {
+            setDirection(right);
+            return;
+        }
+        moveTo(getX() - 2, getY());
+    }
+}
+
+//Goodie class above
+//********************
+//********************
+//StemmedGoodie class below
+
+StemmedGoodie::StemmedGoodie(int imageID, double startX, double startY, StudentWorld* currStudentWorld)
+: Goodie(imageID, startX, startY, currStudentWorld)
+{
+    
+}
+
+void StemmedGoodie::doDifferentiatedOverlapStuff()
+{
+    getWorld()->setPeachHP(2);
+    
+}
+
+//StemmedGoodie class above
+//********************
+//********************
+//FlowerGoodie class below
+
+FlowerGoodie::FlowerGoodie(double startX, double startY, StudentWorld* currStudentWorld)
+: StemmedGoodie(IID_FLOWER, startX, startY, currStudentWorld)
+{
+    
+}
+
+void FlowerGoodie::doDifferentiatedOverlapStuff()
+{
+    StemmedGoodie::doDifferentiatedOverlapStuff();
+    getWorld()->increaseScore(50);
+    
+}
+
+//FlowerGoodie class above
+//********************
+//********************
+//MushroomGoodie class below
+
+MushroomGoodie::MushroomGoodie(double startX, double startY, StudentWorld* currStudentWorld)
+: StemmedGoodie(IID_MUSHROOM, startX, startY, currStudentWorld)
+{
+    
+}
+
+void MushroomGoodie::doDifferentiatedOverlapStuff()
+{
+    StemmedGoodie::doDifferentiatedOverlapStuff();
+    getWorld()->increaseScore(75);
+}
+
+//MushroomGoodie class above
+//********************
+//********************
+//StarGoodie class below
+
+StarGoodie::StarGoodie(double startX, double startY, StudentWorld* currStudentWorld)
+: Goodie(IID_STAR ,startX, startY, currStudentWorld)
+{
+    
+}
+
+void StarGoodie::doDifferentiatedOverlapStuff()
+{
+    
+}
+
+//StarGoodie class above
+//********************
+//********************
 //Peach class below
 
 Peach::Peach(double startX, double startY, StudentWorld* currStudentWorld)
 : Actor(IID_PEACH, startX, startY, currStudentWorld)
 {
+    setPrevent(NOPREVENT);
+    setDamageable(DAMAGEABLE);
     m_hitPoints = 1;
 }
 
@@ -83,6 +249,9 @@ void Peach::bonk()
 
 void Peach::doSomething()
 {
+    if (!getAlive())
+        return;
+    
     int ch;
     if (getWorld()->getKey(ch))
      {
@@ -105,6 +274,9 @@ void Peach::doSomething()
                  }
                  moveTo(getX() + 4, getY());
          break;
+         case KEY_PRESS_UP:
+         case KEY_PRESS_DOWN:
+                 
          default: break;
         // case KEY_PRESS_SPACE:
         // ... add fireball in front of Peach...;
@@ -112,6 +284,11 @@ void Peach::doSomething()
          // etc…
          }
      }
+}
+
+void Peach::setHP(int setVal)
+{
+    m_hitPoints = setVal;
 }
 
 //Peach class above

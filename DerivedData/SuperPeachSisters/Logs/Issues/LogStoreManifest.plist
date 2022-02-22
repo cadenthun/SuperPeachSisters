@@ -34,7 +34,7 @@
 			<key>uniqueIdentifier</key>
 			<string>264C283F-9427-485E-8B4A-18BC3C92BBD7</string>
 		</dict>
-		<key>4D97AB04-BA8B-4D49-AD5E-BEEE76F9C755</key>
+		<key>33E89AF9-9EDB-4ED8-B090-FF4D60C423BF</key>
 		<dict>
 			<key>className</key>
 			<string>IDEActivityLogMajorGroupSection</string>
@@ -43,24 +43,24 @@
 			<key>domainType</key>
 			<string>Xcode.IDEActivityLogDomainType.target.product-type.tool</string>
 			<key>fileName</key>
-			<string>4D97AB04-BA8B-4D49-AD5E-BEEE76F9C755.xcactivitylog</string>
+			<string>33E89AF9-9EDB-4ED8-B090-FF4D60C423BF.xcactivitylog</string>
 			<key>hasPrimaryLog</key>
 			<true/>
 			<key>primaryObservable</key>
 			<dict>
 				<key>highLevelStatus</key>
-				<string>S</string>
+				<string>W</string>
 			</dict>
 			<key>signature</key>
 			<string>SuperPeachSisters-debzrucudiuqorhbncxervxydmxb</string>
 			<key>timeStartedRecording</key>
-			<real>666942941.31749403</real>
+			<real>667182338.89262998</real>
 			<key>timeStoppedRecording</key>
-			<real>666942942.25766206</real>
+			<real>667182339.62592602</real>
 			<key>title</key>
 			<string>Build target SuperPeachSisters</string>
 			<key>uniqueIdentifier</key>
-			<string>4D97AB04-BA8B-4D49-AD5E-BEEE76F9C755</string>
+			<string>33E89AF9-9EDB-4ED8-B090-FF4D60C423BF</string>
 		</dict>
 		<key>593044CE-6018-40E3-9897-7C0EB188CE39</key>
 		<dict>

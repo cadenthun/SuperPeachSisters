@@ -59,11 +59,20 @@ int StudentWorld::init()
                         m_peachPtr = new Peach(i * SPRITE_WIDTH, j * SPRITE_HEIGHT, this);
                         break;
                      case Level::block:
+                            m_container.push_back(new Block(i * SPRITE_WIDTH, j * SPRITE_HEIGHT, this));
+                            break;
                      case Level::star_goodie_block:
+                            m_container.push_back(new Block(i * SPRITE_WIDTH, j * SPRITE_HEIGHT, this));
+                            break;
                      case Level::mushroom_goodie_block:
+                            m_container.push_back(new Block(i * SPRITE_WIDTH, j * SPRITE_HEIGHT, this));
+                            break;
                      case Level::flower_goodie_block:
                         m_container.push_back(new Block(i * SPRITE_WIDTH, j * SPRITE_HEIGHT, this));
+                            m_container.push_back(new FlowerGoodie(i * SPRITE_WIDTH, (j+1) * SPRITE_HEIGHT, this));
                         break;
+                        case Level::pipe:
+                            m_container.push_back(new Pipe(i * SPRITE_WIDTH, j * SPRITE_HEIGHT, this));
                      default: break;
                      }
                 }
@@ -90,11 +99,21 @@ int StudentWorld::move()
     return GWSTATUS_CONTINUE_GAME;
 }
 
-bool StudentWorld::overlap(double x, double y, bool bonk)
+bool StudentWorld::overlap(double x, double y, bool bonk, bool blockable)
 {
+    
     vector<Actor*>::iterator it;
     for(it = m_container.begin(); it != m_container.end(); it++)
     {
+        if((((*it)->getX() - x >= 0 && (*it)->getX() - x < SPRITE_WIDTH) || (x - (*it)->getX() < SPRITE_WIDTH && x - (*it)->getX() >= 0)) && (((*it)->getY() - y >= 0 && (*it)->getY() - y < SPRITE_HEIGHT) || (y - (*it)->getY() < SPRITE_HEIGHT && y - (*it)->getY() >= 0)))
+        {
+            if (blockable == BLOCKABLE && (*it)->getPrevent() == PREVENT)
+                return true;
+            if (bonk)
+                (*it)->bonk();
+            return false;
+        }
+        /*
         if ((*it)->getY() == y)
         {
             if(((*it)->getX() - x >= 0 && (*it)->getX() - x < SPRITE_WIDTH) || (x - (*it)->getX() < SPRITE_WIDTH && x - (*it)->getX() >= 0))
@@ -103,11 +122,36 @@ bool StudentWorld::overlap(double x, double y, bool bonk)
                     (*it)->bonk();
                 return true;
             }
-        }
+        } */
+         
     }
     return false;
 }
 
+bool StudentWorld::canFall(double x, double y)
+{
+    vector<Actor*>::iterator it;
+    for(it = m_container.begin(); it != m_container.end(); it++)
+    {
+      //  if((*it)->getX() == x && (y - (*it)->getY() > 0 && y - (*it)->getY() < 2))
+      //     if((*it)->getPrevent() == PREVENT)
+            return false;
+    }
+    return true;
+}
+
+bool StudentWorld::overlapWithPeach(double x, double y)
+{
+    if(((m_peachPtr->getX() - x >= 0 && m_peachPtr->getX() - x < SPRITE_WIDTH) || (x - m_peachPtr->getX() < SPRITE_WIDTH && x - m_peachPtr->getX() >= 0)) && ((m_peachPtr->getY() - y >= 0 && m_peachPtr->getY() - y < SPRITE_HEIGHT) || (y - m_peachPtr->getY() < SPRITE_HEIGHT && y - m_peachPtr->getY() >= 0)))
+        return true;
+    return false;
+        
+}
+
+void StudentWorld::setPeachHP(int setVal)
+{
+    m_peachPtr->setHP(setVal);
+}
 
 
 void StudentWorld::cleanUp()

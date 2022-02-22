@@ -19,7 +19,11 @@ public:
   virtual int init();
   virtual int move();
   virtual void cleanUp();
-  bool overlap(double x, double y, bool bonk);
+  bool overlap(double x, double y, bool bonk = NOBONK, bool prevent = PREVENT);
+  bool canFall(double x, double y);
+  bool overlapWithPeach(double x, double y);
+  void setPeachHP(int setVal);
+//  void releaseGoodie(double x, double y);
 
 private:
     Peach* m_peachPtr;
