@@ -225,6 +225,53 @@ private:
 //Mario class above
 //********************
 //********************
+//Enemy class below
+
+class Enemy : public Actor
+{
+public:
+    Enemy(int imageID, double startX, double startY, StudentWorld* currStudentWorld);
+    virtual void doSomething();
+    
+private:
+    
+};
+
+//Enemy class above
+//********************
+//********************
+//Goomba class below
+
+class Goomba : public Enemy
+{
+public:
+    Goomba(int startX, int startY, StudentWorld* currStudentWorld);
+private:
+};
+
+//Goomba class above
+//********************
+//********************
+//Koopa class below
+
+class Koopa : public Enemy
+{
+    
+};
+
+//Koopa class above
+//********************
+//********************
+//Piranha class below
+
+class Piranha : public Enemy
+{
+    
+};
+
+//Piranha class above
+//********************
+//********************
 //Peach class below
 
 class Peach : public Actor
@@ -240,6 +287,7 @@ public:
     bool getShootPower();
     bool getJumpPower();
     bool getStarPower();
+    int getRemainingInvincibility();
 private:
     int m_hitPoints;
     bool m_shootPower;

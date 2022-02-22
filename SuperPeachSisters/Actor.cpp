@@ -132,7 +132,7 @@ Goodie::Goodie(int imageID, double startX, double startY, StudentWorld* currStud
 
 void Goodie::doSomething()
 {
-    if (getWorld()->overlapWithPeach(getX(), getY()))
+    if (getWorld()->overlapWithPeach(getX(), getY(), NOBONK))
     {
         getWorld()->playSound(SOUND_PLAYER_POWERUP);
         doDifferentiatedOverlapStuff(); //REMEMBER TO FILL THIS IN
@@ -251,7 +251,7 @@ void Goal::doSomething()
 {
     if (!getAlive())
         return;
-    if (getWorld()->overlapWithPeach(getX(), getY()))
+    if (getWorld()->overlapWithPeach(getX(), getY(), NOBONK))
     {
         getWorld()->increaseScore(1000);
         setAlive(DEAD);
@@ -270,7 +270,7 @@ Flag::Flag(double startX, double startY, StudentWorld* currStudentWorld)
 
 void Flag::doSpecificStuff()
 {
-    if (getWorld()->overlapWithPeach(getX(), getY()))
+    if (getWorld()->overlapWithPeach(getX(), getY(), NOBONK))
     {
         getWorld()->setLevelStatus(LEVELCOMPLETE);
     }
@@ -287,7 +287,7 @@ Mario::Mario(double startX, double startY, StudentWorld* currStudentWorld)
 
 void Mario::doSpecificStuff()
 {
-    if (getWorld()->overlapWithPeach(getX(), getY()))
+    if (getWorld()->overlapWithPeach(getX(), getY(), NOBONK))
     {
         getWorld()->setGameStatus(GAMEWON);
     }
@@ -296,8 +296,74 @@ void Mario::doSpecificStuff()
 //Mario class above
 //********************
 //********************
-//Peach class below
+//Enemy class below
 
+Enemy::Enemy(int imageID, double startX, double startY, StudentWorld* currStudentWorld)
+: Actor(imageID, startX, startY, currStudentWorld, 0, (randInt(0, 1) * 180))
+{
+}
+
+void Enemy::doSomething()
+{
+    if (getAlive() == DEAD)
+        return;
+    
+    if (getWorld()->overlapWithPeach(getX(), getY(), BONK))
+        return;
+    
+    if (getDirection() == right)
+    {
+        if (getWorld()->overlap(getX() + 1, getY(), NOBONK, BLOCKABLE))
+            setDirection(left);
+        else
+            if (!getWorld()->overlap(getX() + SPRITE_WIDTH, getY() - 1, NOBONK, BLOCKABLE))
+                setDirection(left);
+    }
+    
+    if (getDirection() == left)
+    {
+        if (getWorld()->overlap(getX() - 1, getY(), NOBONK, BLOCKABLE))
+            setDirection(right);
+        else
+            if (!getWorld()->overlap(getX() - SPRITE_WIDTH, getY() - 1, NOBONK, BLOCKABLE))
+                setDirection(right);
+    }
+    
+    if (getDirection() == right && !getWorld()->overlap(getX() + 1, getY(), NOBONK, BLOCKABLE))
+        moveTo(getX() + 1, getY());
+    if (getDirection() == left && !getWorld()->overlap(getX() - 1, getY(), NOBONK, BLOCKABLE))
+        moveTo(getX() - 1, getY());
+}
+
+//Enemy class above
+//********************
+//********************
+//Goomba class below
+
+Goomba::Goomba(int startX, int startY, StudentWorld* currStudentWorld)
+: Enemy(IID_GOOMBA, startX, startY, currStudentWorld)
+{
+
+}
+
+//Goomba class above
+//********************
+//********************
+//Koopa class below
+
+
+
+//Koopa class above
+//********************
+//********************
+//Piranha class below
+
+
+
+//Piranha class above
+//********************
+//********************
+//Peach class below
 
 Peach::Peach(double startX, double startY, StudentWorld* currStudentWorld)
 : Actor(IID_PEACH, startX, startY, currStudentWorld)
@@ -315,6 +381,12 @@ void Peach::doSomething()
 {
     if (!getAlive())
         return;
+    
+    if (m_remainingInvincibility == 0)
+        m_starPower = POWERDEACTIVATED;
+    
+    if (m_remainingInvincibility > 0)
+        m_remainingInvincibility --;
     
     (getWorld()->overlap(getX(), getY(), BONK));
     
@@ -394,6 +466,8 @@ void Peach::setJumpPower(bool jumpPowerStatus)
 void Peach::setStarPower(bool starPowerStatus)
 {
     m_starPower = starPowerStatus;
+    if (m_starPower == POWERACTIVATED)
+        m_remainingInvincibility = 150;
 }
 
 bool Peach::getShootPower()
@@ -409,6 +483,11 @@ bool Peach::getJumpPower()
 bool Peach::getStarPower()
 {
     return m_starPower;
+}
+
+int Peach::getRemainingInvincibility()
+{
+    return m_remainingInvincibility;
 }
 
 void Peach::setHP(int setVal)
