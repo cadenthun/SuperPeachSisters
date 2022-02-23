@@ -296,6 +296,68 @@ void Mario::doSpecificStuff()
 //Mario class above
 //********************
 //********************
+//Projectile class below
+
+Projectile::Projectile(int imageID, double startX, double startY, StudentWorld* currStudentWorld, int direction)
+: Actor(imageID, startX, startY, currStudentWorld, 1, direction)
+{
+    setPrevent(NOPREVENT);
+    setDamageable(NOTDAMAGEABLE);
+}
+
+void Projectile::doSomething() //Right now this is only for piranha fireball
+{
+    doDifferentiatedStuff();
+    if (getWorld()->canFall(getX(), getY(), 2))
+        moveTo(getX(), getY() - 2);
+    if (getDirection() == right)
+    {
+        if (getWorld()->overlap(getX() + 2, getY(), NOBONK, BLOCKABLE))
+        {
+            setAlive(DEAD);
+            return;
+        }
+    }
+    else
+        if (getDirection() == left)
+        {
+            if (getWorld()->overlap(getX() - 2, getY(), NOBONK, BLOCKABLE))
+            {
+                setAlive(DEAD);
+                return;
+            }
+        }
+    if (getDirection() == right)
+        moveTo(getX() + 2, getY());
+    else
+        if (getDirection() == left)
+            moveTo(getX() - 2, getY());
+}
+
+//Projectile class above
+//********************
+//********************
+//PiranhaFireball class below
+
+PiranhaFireball::PiranhaFireball(double startX, double startY, StudentWorld* currStudentWorld, int direction)
+: Projectile(IID_PIRANHA_FIRE, startX, startY, currStudentWorld, direction)
+{
+    
+}
+
+
+void PiranhaFireball::doDifferentiatedStuff()
+{
+    if (getWorld()->overlapWithPeach(getX(), getY(), DAMAGE))
+    {
+        setAlive(DEAD);
+        return;
+    }
+}
+
+//PiranhaFireball class above
+//********************
+//********************
 //Enemy class below
 
 Enemy::Enemy(int imageID, double startX, double startY, StudentWorld* currStudentWorld)
@@ -314,18 +376,21 @@ void Enemy::doSomething()
         return;
 }
 
-void Enemy::bonk()
+void Enemy::inflictDamage()
 {
-    /*
-    if (bonkedByPeach)
+    getWorld()->increaseScore(100);
+    setAlive(DEAD);
+}
+
+void Enemy::bonk() //ASSUMING PEACH IS THE ONLY ACTOR WHO CAN CAUSE THIS FUNCTION TO BE CALLED
+{
+  
+    if (getWorld()->getPeachStarPower() == POWERACTIVATED)
     {
-        if (getWorld()->getPeachStarPower() == POWERACTIVATED)
-        {
-            getWorld()->playSound(SOUND_PLAYER_KICK);
-            getWorld()->increaseScore(100);
-            setAlive(DEAD);
-        }
-    } */
+        getWorld()->playSound(SOUND_PLAYER_KICK);
+        inflictDamage();
+    }
+
 }
 
 //Enemy class above
@@ -388,6 +453,11 @@ Koopa::Koopa(int startX, int startY, StudentWorld* currStudentWorld)
 void Koopa::bonk()
 {
     Enemy::bonk();
+    inflictDamage();
+}
+
+void Koopa::inflictDamage()
+{
     //introduce shell object
 }
 
@@ -396,7 +466,37 @@ void Koopa::bonk()
 //********************
 //Piranha class below
 
+Piranha::Piranha(int startX, int startY, StudentWorld* currStudentWorld)
+: Enemy(IID_PIRANHA, startX, startY, currStudentWorld)
+{
+    m_firingDelay = 0;
+}
 
+void Piranha::doSomething()
+{
+    Enemy::doSomething();
+    increaseAnimationNumber();
+    if (!getWorld()->onSameLevelAsPeach(getY()))
+        return;
+    if (getWorld()->peachToRight(getX()))
+        setDirection(right);
+    if (getWorld()->peachToLeft(getX()))
+        setDirection(left);
+    if (m_firingDelay == 0)
+    {
+        if (getWorld()->xDistanceFromPeach(getX()) < 8 * SPRITE_WIDTH)
+        {
+            getWorld()->releaseProjectile(getX(), getY(), piranhaFireball, getDirection());
+            getWorld()->playSound(SOUND_PIRANHA_FIRE);
+            m_firingDelay = 40;
+        }
+    }
+    if (m_firingDelay > 0)
+    {
+        m_firingDelay--;
+        return;
+    }
+}
 
 //Piranha class above
 //********************
@@ -413,7 +513,18 @@ Peach::Peach(double startX, double startY, StudentWorld* currStudentWorld)
 }
 
 void Peach::bonk()
-{}
+{
+    if (m_starPower == POWERACTIVATED)
+        return;
+    m_hitPoints--;
+    m_remainingTempInvincibility = 10;
+    m_shootPower = POWERDEACTIVATED;
+    m_jumpPower = POWERDEACTIVATED;
+    if (m_hitPoints > 0)
+        getWorld()->playSound(SOUND_PLAYER_HURT);
+    if (m_hitPoints <= 0)
+        setAlive(DEAD);
+}
 
 void Peach::doSomething()
 {
@@ -426,7 +537,7 @@ void Peach::doSomething()
     if (m_remainingInvincibility > 0)
         m_remainingInvincibility --;
     
-    (getWorld()->overlap(getX(), getY(), BONK, NOTBLOCKABLE, BONKEDBYPEACH));
+    (getWorld()->overlap(getX(), getY(), BONK, BLOCKABLE));
     
     if (m_remainingJumpDistance == 0)
     {

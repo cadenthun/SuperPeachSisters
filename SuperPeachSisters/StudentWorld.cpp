@@ -81,10 +81,13 @@ int StudentWorld::init()
                         m_container.push_back(new Mario(i * SPRITE_WIDTH, j * SPRITE_HEIGHT, this));
                         break;
                     case Level::goomba:
-                        m_container.push_back(new Goomba(i * SPRITE_WIDTH, j * SPRITE_HEIGHT, this));
+                     //   m_container.push_back(new Goomba(i * SPRITE_WIDTH, j * SPRITE_HEIGHT, this));
                         break;
                     case Level::koopa:
-                        m_container.push_back(new Koopa(i * SPRITE_WIDTH, j * SPRITE_HEIGHT, this));
+                     //   m_container.push_back(new Koopa(i * SPRITE_WIDTH, j * SPRITE_HEIGHT, this));
+                        break;
+                    case Level::piranha:
+                        m_container.push_back(new Piranha(i * SPRITE_WIDTH, j * SPRITE_HEIGHT, this));
                         break;
                      default: break;
                      }
@@ -102,9 +105,7 @@ int StudentWorld::move()
     // Notice that the return value GWSTATUS_PLAYER_DIED will cause our framework to end the current level.
     //
   //  decLives();
-    
-    m_peachPtr->doSomething();
-    
+        
     for(vector<Actor*>::iterator it = m_container.begin(); it != m_container.end();)
     {
         if((*it)->getAlive() == DEAD)
@@ -116,9 +117,18 @@ int StudentWorld::move()
         it++;
     }
     
+    m_peachPtr->doSomething();
+    
     for(vector<Actor*>::iterator it2 = m_container.begin(); it2 != m_container.end(); it2++)
     {
         (*it2)->doSomething();
+    }
+    
+    if (m_peachPtr->getAlive() == DEAD)
+    {
+        playSound(SOUND_PLAYER_DIE);
+        decLives();
+        return GWSTATUS_PLAYER_DIED;
     }
     
     string starPowerText = "";
@@ -138,11 +148,18 @@ int StudentWorld::move()
     setGameStatText(screenText.str());
     
     if (m_levelComplete == LEVELCOMPLETE)
+    {
+        playSound(SOUND_FINISHED_LEVEL);
         return GWSTATUS_FINISHED_LEVEL;
+    }
     if (m_gameWon == GAMEWON)
+    {
+        playSound(SOUND_GAME_OVER);
         return GWSTATUS_PLAYER_WON;
+    }
     return GWSTATUS_CONTINUE_GAME;
 }
+
 
 void StudentWorld::releaseGoodie(double x, double y, int goodieType)
 {
@@ -156,6 +173,20 @@ void StudentWorld::releaseGoodie(double x, double y, int goodieType)
             break;
         case star:
             m_container.push_back(new StarGoodie(x, y + 8, this));
+            break;
+    }
+}
+
+void StudentWorld::releaseProjectile(double x, double y, int projectileType, int direction)
+{
+    switch(projectileType)
+    {
+        case piranhaFireball:
+            m_container.push_back(new PiranhaFireball(x, y, this, direction));
+            break;
+        case peachFireball:
+            break;
+        case shell:
             break;
     }
 }
@@ -197,6 +228,35 @@ bool StudentWorld::canFall(double x, double y, int fallDistance)
             return false;
     } 
     return true;
+}
+
+bool StudentWorld::onSameLevelAsPeach(double y)
+{
+    if ((m_peachPtr->getY() - y >= 0 && m_peachPtr->getY() - y <= 1.5 * SPRITE_HEIGHT) || (y - m_peachPtr->getY() >= 0 && y - m_peachPtr->getY() <= 1.5 * SPRITE_HEIGHT))
+        return true;
+    return false;
+}
+
+bool StudentWorld::peachToRight(double x)
+{
+    if (m_peachPtr->getX() > x)
+        return true;
+    return false;
+}
+
+bool StudentWorld::peachToLeft(double x)
+{
+    if (m_peachPtr->getX() < x)
+        return true;
+    return false;
+}
+
+int StudentWorld::xDistanceFromPeach(double x)
+{
+    int absVal = m_peachPtr->getX() - x;
+    if (absVal < 0)
+        absVal *= -1;
+    return absVal;
 }
 
 void StudentWorld::setPeachAlive(bool lifeStatus)
@@ -241,6 +301,7 @@ void StudentWorld::setGameStatus(bool status)
 
 void StudentWorld::cleanUp()
 {
+    delete m_peachPtr;
     vector<Actor*>::iterator it;
     for(it = m_container.begin(); it != m_container.end(); it++)
     {

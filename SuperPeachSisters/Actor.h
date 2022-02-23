@@ -13,9 +13,11 @@ class StudentWorld;
 //Constants below
 
 enum goodieType {flower, mushroom, star};
+enum projectileType {piranhaFireball, peachFireball, shell};
 const bool ALIVE = true;
 const bool DEAD = false;
 const bool BONK = true;
+const bool DAMAGE = true;
 const bool NOBONK = false;
 const bool PREVENT = true;
 const bool NOPREVENT = false;
@@ -226,7 +228,34 @@ private:
 //Mario class above
 //********************
 //********************
-//Enemy class below
+//Projectile class below
+
+class Projectile : public Actor
+{
+public:
+    Projectile(int imageID, double startX, double startY, StudentWorld* currStudentWorld, int direction);
+    virtual void doSomething();
+    virtual void doDifferentiatedStuff() = 0;
+private:
+};
+
+//Projectile class above
+//********************
+//********************
+//PiranhaFireball class below
+
+class PiranhaFireball : public Projectile
+{
+public:
+    PiranhaFireball(double startX, double startY, StudentWorld* currStudentWorld, int direction);
+    virtual void doDifferentiatedStuff();
+private:
+};
+
+//Projectile class above
+//********************
+//********************
+//PiranhaFireball class below
 
 class Enemy : public Actor
 {
@@ -234,6 +263,7 @@ public:
     Enemy(int imageID, double startX, double startY, StudentWorld* currStudentWorld);
     virtual void doSomething();
     virtual void bonk();
+    virtual void inflictDamage();
 
     
 private:
@@ -276,6 +306,7 @@ class Koopa : public MobileEnemy
 public:
     Koopa(int startX, int startY, StudentWorld* currStudentWorld);
     virtual void bonk();
+    virtual void inflictDamage();
 private:
     
 };
@@ -287,7 +318,11 @@ private:
 
 class Piranha : public Enemy
 {
-    
+public:
+    Piranha(int startX, int startY, StudentWorld* currStudentWorld);
+    virtual void doSomething();
+private:
+    int m_firingDelay;
 };
 
 //Piranha class above
@@ -318,7 +353,7 @@ private:
     bool m_invincibility;
     int m_remainingInvincibility;
     bool m_tempInvincibility;
-    int m_remainingtempInvincibility;
+    int m_remainingTempInvincibility;
     bool m_inRechargeMode;
     int m_remainingRechargeTime;
 };
