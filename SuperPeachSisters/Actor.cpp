@@ -17,21 +17,13 @@ Actor::Actor(int imageID, double startX, double startY, StudentWorld* currStuden
 }
 
 void Actor::bonk() {}
+void Actor::inflictDamage() {}
 
 StudentWorld* Actor::getWorld()
 {
     return m_currStudentWorld;
 }
 
-
-bool Actor::getPrevent()
-{
-    return m_prevent;
-}
-bool Actor::getDamageable()
-{
-    return m_damageable;
-}
 
 void Actor::setPrevent(bool prevent)
 {
@@ -40,6 +32,15 @@ void Actor::setPrevent(bool prevent)
 void Actor::setDamageable(bool damageable)
 {
     m_damageable = damageable;
+}
+
+bool Actor::getPrevent()
+{
+    return m_prevent;
+}
+bool Actor::getDamageable()
+{
+    return m_damageable;
 }
 
 bool Actor::getAlive()
@@ -307,7 +308,8 @@ Projectile::Projectile(int imageID, double startX, double startY, StudentWorld* 
 
 void Projectile::doSomething() //Right now this is only for piranha fireball
 {
-    doDifferentiatedStuff();
+    if (doDifferentiatedStuff() == DEAD)
+        return;
     if (getWorld()->canFall(getX(), getY(), 2))
         moveTo(getX(), getY() - 2);
     if (getDirection() == right)
@@ -337,6 +339,26 @@ void Projectile::doSomething() //Right now this is only for piranha fireball
 //Projectile class above
 //********************
 //********************
+//ProPeachProjectile class below
+
+ProPeachProjectile::ProPeachProjectile(int imageID, double startX, double startY, StudentWorld* currStudentWorld, int direction)
+: Projectile(imageID, startX, startY, currStudentWorld, direction)
+{
+}
+
+bool ProPeachProjectile::doDifferentiatedStuff()
+{
+    if (getWorld()->overlap(getX(), getY(), NOBONK, BLOCKABLE, DAMAGE, PROPEACHOVERLAPPING))
+    {
+        setAlive(DEAD);
+        return DEAD;
+    }
+    return ALIVE;
+}
+
+//ProPeachProjectile class above
+//********************
+//********************
 //PiranhaFireball class below
 
 PiranhaFireball::PiranhaFireball(double startX, double startY, StudentWorld* currStudentWorld, int direction)
@@ -346,16 +368,37 @@ PiranhaFireball::PiranhaFireball(double startX, double startY, StudentWorld* cur
 }
 
 
-void PiranhaFireball::doDifferentiatedStuff()
+bool PiranhaFireball::doDifferentiatedStuff()
 {
     if (getWorld()->overlapWithPeach(getX(), getY(), DAMAGE))
     {
         setAlive(DEAD);
-        return;
+        return DEAD;
     }
+    return ALIVE;
 }
 
 //PiranhaFireball class above
+//********************
+//********************
+//PeachFireball class below
+
+PeachFireball::PeachFireball(double startX, double startY, StudentWorld* currStudentWorld, int direction)
+: ProPeachProjectile(IID_PEACH_FIRE, startX, startY, currStudentWorld, direction)
+{
+}
+
+//PeachFireball class above
+//********************
+//********************
+//Shell class below
+
+Shell::Shell(double startX, double startY, StudentWorld* currStudentWorld, int direction)
+: ProPeachProjectile(IID_SHELL, startX, startY, currStudentWorld, direction)
+{
+}
+
+//Shell class above
 //********************
 //********************
 //Enemy class below
@@ -374,6 +417,8 @@ void Enemy::doSomething()
     
     if (getWorld()->overlapWithPeach(getX(), getY(), BONK))
         return;
+    
+    doDifferentiatedStuff();
 }
 
 void Enemy::inflictDamage()
@@ -402,9 +447,8 @@ MobileEnemy::MobileEnemy(int imageID, double startX, double startY, StudentWorld
 : Enemy(imageID, startX, startY, currStudentWorld)
 {}
 
-void MobileEnemy::doSomething()
+void MobileEnemy::doDifferentiatedStuff()
 {
-    Enemy::doSomething();
     
     if (getDirection() == right)
     {
@@ -430,6 +474,11 @@ void MobileEnemy::doSomething()
         moveTo(getX() - 1, getY());
 }
 
+void MobileEnemy::inflictDamage()
+{
+    Enemy::inflictDamage();
+}
+
 //MobileEnemy class above
 //********************
 //********************
@@ -438,7 +487,6 @@ void MobileEnemy::doSomething()
 Goomba::Goomba(int startX, int startY, StudentWorld* currStudentWorld)
 : MobileEnemy(IID_GOOMBA, startX, startY, currStudentWorld)
 {
-
 }
 
 //Goomba class above
@@ -450,15 +498,10 @@ Koopa::Koopa(int startX, int startY, StudentWorld* currStudentWorld)
 : MobileEnemy(IID_KOOPA, startX, startY, currStudentWorld)
 {}
 
-void Koopa::bonk()
-{
-    Enemy::bonk();
-    inflictDamage();
-}
-
 void Koopa::inflictDamage()
 {
-    //introduce shell object
+    MobileEnemy::inflictDamage();
+    getWorld()->releaseProjectile(getX(), getY(), shell, getDirection());
 }
 
 //Koopa class above
@@ -472,9 +515,8 @@ Piranha::Piranha(int startX, int startY, StudentWorld* currStudentWorld)
     m_firingDelay = 0;
 }
 
-void Piranha::doSomething()
+void Piranha::doDifferentiatedStuff()
 {
-    Enemy::doSomething();
     increaseAnimationNumber();
     if (!getWorld()->onSameLevelAsPeach(getY()))
         return;
@@ -510,13 +552,17 @@ Peach::Peach(double startX, double startY, StudentWorld* currStudentWorld)
     setDamageable(DAMAGEABLE);
     m_hitPoints = 1;
     m_remainingJumpDistance = 0;
+    m_shootPower = POWERDEACTIVATED;
+    m_jumpPower = POWERDEACTIVATED;
+    m_starPower = POWERDEACTIVATED;
 }
 
 void Peach::bonk()
 {
-    if (m_starPower == POWERACTIVATED)
+    if (m_starPower == POWERACTIVATED || m_tempInvincibility)
         return;
     m_hitPoints--;
+    m_tempInvincibility = true;
     m_remainingTempInvincibility = 10;
     m_shootPower = POWERDEACTIVATED;
     m_jumpPower = POWERDEACTIVATED;
@@ -536,6 +582,15 @@ void Peach::doSomething()
     
     if (m_remainingInvincibility > 0)
         m_remainingInvincibility --;
+    
+    if (m_remainingTempInvincibility == 0)
+        m_tempInvincibility = false;
+    
+    if (m_remainingTempInvincibility > 0)
+        m_remainingTempInvincibility --;
+    
+    if (m_remainingRechargeTime > 0)
+        m_remainingRechargeTime --;
     
     (getWorld()->overlap(getX(), getY(), BONK, BLOCKABLE));
     
@@ -591,13 +646,21 @@ void Peach::doSomething()
                          m_remainingJumpDistance = 8;
                      getWorld()->playSound(SOUND_PLAYER_JUMP);
                  }
-         case KEY_PRESS_DOWN:
-                 
+         break;
+         case KEY_PRESS_SPACE:
+                 if (!m_shootPower)
+                     break;
+                 if (m_remainingRechargeTime > 0)
+                     break;
+                 getWorld()->playSound(SOUND_PLAYER_FIRE);
+                 m_remainingRechargeTime = 8;
+                 if (getDirection() == right)
+                     getWorld()->releaseProjectile(getX() + 4, getY(), peachFireball, right);
+                 if (getDirection() == left)
+                     getWorld()->releaseProjectile(getX() - 4, getY(), peachFireball, left);
+                 break;
+
          default: break;
-        // case KEY_PRESS_SPACE:
-        // ... add fireball in front of Peach...;
-       //  break;
-         // etc…
          }
      }
 }

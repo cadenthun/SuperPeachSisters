@@ -21,7 +21,7 @@ public:
   virtual void cleanUp();
   void releaseGoodie(double x, double y, int goodieType);
   void releaseProjectile(double x, double y, int projectileType, int direction);
-  bool overlap(double x, double y, bool bonk = NOBONK, bool prevent = PREVENT, bool bonkedByPeach = false);
+  bool overlap(double x, double y, bool bonk = NOBONK, bool prevent = PREVENT, bool damage = NODAMAGE,  bool overlapperProPeachProj = false);
   bool canFall(double x, double y, int fallDistance);
   bool overlapWithPeach(double x, double y, bool bonk);
   bool onSameLevelAsPeach(double y);

@@ -20,9 +20,12 @@ const bool BONK = true;
 const bool DAMAGE = true;
 const bool NOBONK = false;
 const bool PREVENT = true;
+const bool ANYACTOR = true;
+const bool ONLYPREVENT = false;
 const bool NOPREVENT = false;
 const bool DAMAGEABLE = true;
 const bool NOTDAMAGEABLE = false;
+const bool NODAMAGE = false;
 const bool BLOCKABLE = true;
 const bool NOTBLOCKABLE = false;
 const bool LEVELCOMPLETE = true;
@@ -32,6 +35,7 @@ const bool GAMENOTWON = false;
 const bool POWERACTIVATED = true;
 const bool POWERDEACTIVATED = false;
 const bool BONKEDBYPEACH = true;
+const bool PROPEACHOVERLAPPING = true;
 
 //for Special Blocks
 
@@ -49,6 +53,7 @@ public:
     Actor(int imageID, double startX, double startY, StudentWorld* currStudentWorld, int depth = 0, int direction = 0);
     virtual void doSomething() = 0;
     virtual void bonk();
+    virtual void inflictDamage();
     StudentWorld* getWorld();
     bool getPrevent();
     void setPrevent(bool prevent);
@@ -235,11 +240,25 @@ class Projectile : public Actor
 public:
     Projectile(int imageID, double startX, double startY, StudentWorld* currStudentWorld, int direction);
     virtual void doSomething();
-    virtual void doDifferentiatedStuff() = 0;
+    virtual bool doDifferentiatedStuff() = 0;
 private:
 };
 
 //Projectile class above
+//********************
+//********************
+//ProPeachProjectile class below
+
+class ProPeachProjectile : public Projectile
+{
+public:
+    ProPeachProjectile(int imageID, double startX, double startY, StudentWorld* currStudentWorld, int direction);
+    virtual bool doDifferentiatedStuff();
+private:
+    
+};
+
+//ProPeachProjectile class above
 //********************
 //********************
 //PiranhaFireball class below
@@ -248,20 +267,45 @@ class PiranhaFireball : public Projectile
 {
 public:
     PiranhaFireball(double startX, double startY, StudentWorld* currStudentWorld, int direction);
-    virtual void doDifferentiatedStuff();
+    virtual bool doDifferentiatedStuff();
 private:
 };
 
-//Projectile class above
+//PiranhaFireball class above
 //********************
 //********************
-//PiranhaFireball class below
+//PeachFireball class below
+
+class PeachFireball : public ProPeachProjectile
+{
+public:
+    PeachFireball(double startX, double startY, StudentWorld* currStudentWorld, int direction);
+private:
+};
+
+//PeachFireball class above
+//********************
+//********************
+//Shell class below
+
+class Shell : public ProPeachProjectile
+{
+public:
+    Shell(double startX, double startY, StudentWorld* currStudentWorld, int direction);
+private:
+};
+
+//Shell class above
+//********************
+//********************
+//Enemy class below
 
 class Enemy : public Actor
 {
 public:
     Enemy(int imageID, double startX, double startY, StudentWorld* currStudentWorld);
     virtual void doSomething();
+    virtual void doDifferentiatedStuff() = 0;
     virtual void bonk();
     virtual void inflictDamage();
 
@@ -279,7 +323,8 @@ class MobileEnemy : public Enemy
 {
 public:
     MobileEnemy(int imageID, double startX, double startY, StudentWorld* currStudentWorld);
-    virtual void doSomething();
+    virtual void doDifferentiatedStuff();
+    virtual void inflictDamage();
 private:
     
 };
@@ -305,7 +350,6 @@ class Koopa : public MobileEnemy
 {
 public:
     Koopa(int startX, int startY, StudentWorld* currStudentWorld);
-    virtual void bonk();
     virtual void inflictDamage();
 private:
     
@@ -320,7 +364,7 @@ class Piranha : public Enemy
 {
 public:
     Piranha(int startX, int startY, StudentWorld* currStudentWorld);
-    virtual void doSomething();
+    virtual void doDifferentiatedStuff();
 private:
     int m_firingDelay;
 };
@@ -351,8 +395,8 @@ private:
     bool m_starPower;
     int m_remainingJumpDistance;
     bool m_invincibility;
-    int m_remainingInvincibility;
     bool m_tempInvincibility;
+    int m_remainingInvincibility;
     int m_remainingTempInvincibility;
     bool m_inRechargeMode;
     int m_remainingRechargeTime;

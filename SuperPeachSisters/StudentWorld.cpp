@@ -31,7 +31,7 @@ StudentWorld::~StudentWorld()
 
 int StudentWorld::init()
 {
-    
+    m_levelComplete = false;
     Level lev(assetPath());
     ostringstream oss;
     oss.fill('0');
@@ -81,10 +81,10 @@ int StudentWorld::init()
                         m_container.push_back(new Mario(i * SPRITE_WIDTH, j * SPRITE_HEIGHT, this));
                         break;
                     case Level::goomba:
-                     //   m_container.push_back(new Goomba(i * SPRITE_WIDTH, j * SPRITE_HEIGHT, this));
+                        m_container.push_back(new Goomba(i * SPRITE_WIDTH, j * SPRITE_HEIGHT, this));
                         break;
                     case Level::koopa:
-                     //   m_container.push_back(new Koopa(i * SPRITE_WIDTH, j * SPRITE_HEIGHT, this));
+                        m_container.push_back(new Koopa(i * SPRITE_WIDTH, j * SPRITE_HEIGHT, this));
                         break;
                     case Level::piranha:
                         m_container.push_back(new Piranha(i * SPRITE_WIDTH, j * SPRITE_HEIGHT, this));
@@ -105,17 +105,6 @@ int StudentWorld::move()
     // Notice that the return value GWSTATUS_PLAYER_DIED will cause our framework to end the current level.
     //
   //  decLives();
-        
-    for(vector<Actor*>::iterator it = m_container.begin(); it != m_container.end();)
-    {
-        if((*it)->getAlive() == DEAD)
-        {
-            delete (*it);
-            m_container.erase(it);
-            continue;
-        }
-        it++;
-    }
     
     m_peachPtr->doSomething();
     
@@ -129,6 +118,17 @@ int StudentWorld::move()
         playSound(SOUND_PLAYER_DIE);
         decLives();
         return GWSTATUS_PLAYER_DIED;
+    }
+    
+    for(vector<Actor*>::iterator it = m_container.begin(); it != m_container.end();)
+    {
+        if((*it)->getAlive() == DEAD)
+        {
+            delete (*it);
+            m_container.erase(it);
+            continue;
+        }
+        it++;
     }
     
     string starPowerText = "";
@@ -185,13 +185,15 @@ void StudentWorld::releaseProjectile(double x, double y, int projectileType, int
             m_container.push_back(new PiranhaFireball(x, y, this, direction));
             break;
         case peachFireball:
+            m_container.push_back(new PeachFireball(x, y, this, direction));
             break;
         case shell:
+            m_container.push_back(new Shell(x, y, this, direction));
             break;
     }
 }
 
-bool StudentWorld::overlap(double x, double y, bool bonk, bool blockable, bool bonkedByPeach)
+bool StudentWorld::overlap(double x, double y, bool bonk, bool blockable, bool damage, bool overlapperProPeachProj)
 {
     
     vector<Actor*>::iterator it;
@@ -199,9 +201,13 @@ bool StudentWorld::overlap(double x, double y, bool bonk, bool blockable, bool b
     {
         if((((*it)->getX() - x >= 0 && (*it)->getX() - x < SPRITE_WIDTH) || (x - (*it)->getX() < SPRITE_WIDTH && x - (*it)->getX() >= 0)) && (((*it)->getY() - y >= 0 && (*it)->getY() - y < SPRITE_HEIGHT) || (y - (*it)->getY() < SPRITE_HEIGHT && y - (*it)->getY() >= 0)))
         {
-            if (bonk)
+            if (bonk && (*it)->getAlive())
                 (*it)->bonk();
-            if (blockable == BLOCKABLE && (*it)->getPrevent() == PREVENT)
+            if (damage == DAMAGE && (*it)->getAlive())
+                (*it)->inflictDamage();
+            if (blockable == BLOCKABLE && (*it)->getPrevent() == PREVENT && (*it)->getAlive())
+                return true;
+            if (overlapperProPeachProj && (*it)->getDamageable() == DAMAGEABLE && (*it)->getX() != x)
                 return true;
         }
     }
