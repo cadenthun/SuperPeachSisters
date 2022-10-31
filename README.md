@@ -3,5 +3,5 @@ Super Peach Sisters is set in the Mushroom Queendom, fictional land of crazy cre
 
 Each level contains a number of challenges, which include dangerous koopas, goombas, and fire-breathing Piranhas that grow from pipes. Peach must avoid or destroy these creatures to reach the flag on each level, which takes her to the next level. Once Peach reaches the final level, she must then get to Mario to save him and win the game. Each level contains a number of goodies that Peach can reveal by bonking her head against blocks. These goodies include Stars (which grant invincibility to Peach), Mushrooms (which enable Peach to double her jumping height), and Flowers which enables Peach to shoot fireballs at her opponents.
 
-# Creator Notes
-This is one of my project submissions for CS32, taken Winter 2022 at UCLA. I received a perfect score on the project.
+# Background
+This is one of my project submissions for CS32, taken Winter 2022 at UCLA, which received a perfect score. The project spec is included in this repository. 
