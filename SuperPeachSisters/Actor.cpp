@@ -136,7 +136,7 @@ void Goodie::doSomething()
     if (getWorld()->overlapWithPeach(getX(), getY(), NOBONK))
     {
         getWorld()->playSound(SOUND_PLAYER_POWERUP);
-        doDifferentiatedOverlapStuff(); //REMEMBER TO FILL THIS IN
+        doDifferentiatedOverlapStuff(); 
         setAlive(DEAD);
         return;
     }
@@ -174,7 +174,6 @@ void Goodie::doSomething()
 StemmedGoodie::StemmedGoodie(int imageID, double startX, double startY, StudentWorld* currStudentWorld)
 : Goodie(imageID, startX, startY, currStudentWorld)
 {
-    
 }
 
 void StemmedGoodie::doDifferentiatedOverlapStuff()
@@ -198,7 +197,6 @@ void FlowerGoodie::doDifferentiatedOverlapStuff()
     StemmedGoodie::doDifferentiatedOverlapStuff();
     getWorld()->increaseScore(50);
     getWorld()->setPeachShootPower(POWERACTIVATED);
-    
 }
 
 //FlowerGoodie class above
@@ -227,7 +225,6 @@ void MushroomGoodie::doDifferentiatedOverlapStuff()
 StarGoodie::StarGoodie(double startX, double startY, StudentWorld* currStudentWorld)
 : Goodie(IID_STAR ,startX, startY, currStudentWorld)
 {
-    
 }
 
 void StarGoodie::doDifferentiatedOverlapStuff()
@@ -427,7 +424,7 @@ void Enemy::inflictDamage()
     setAlive(DEAD);
 }
 
-void Enemy::bonk() //ASSUMING PEACH IS THE ONLY ACTOR WHO CAN CAUSE THIS FUNCTION TO BE CALLED
+void Enemy::bonk() 
 {
   
     if (getWorld()->getPeachStarPower() == POWERACTIVATED)
@@ -552,6 +549,9 @@ Peach::Peach(double startX, double startY, StudentWorld* currStudentWorld)
     setDamageable(DAMAGEABLE);
     m_hitPoints = 1;
     m_remainingJumpDistance = 0;
+    m_remainingRechargeTime = 0;
+    m_remainingTempInvincibility = 0;
+    m_remainingInvincibility = 0;
     m_shootPower = POWERDEACTIVATED;
     m_jumpPower = POWERDEACTIVATED;
     m_starPower = POWERDEACTIVATED;
@@ -695,11 +695,6 @@ bool Peach::getJumpPower()
 bool Peach::getStarPower()
 {
     return m_starPower;
-}
-
-int Peach::getRemainingInvincibility()
-{
-    return m_remainingInvincibility;
 }
 
 void Peach::setHP(int setVal)

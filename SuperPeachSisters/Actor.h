@@ -387,7 +387,6 @@ public:
     bool getShootPower();
     bool getJumpPower();
     bool getStarPower();
-    int getRemainingInvincibility();
 private:
     int m_hitPoints;
     bool m_shootPower;

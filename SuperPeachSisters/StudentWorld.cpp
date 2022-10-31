@@ -63,14 +63,14 @@ int StudentWorld::init()
                         m_container.push_back(new Pipe(i * SPRITE_WIDTH, j * SPRITE_HEIGHT, this));
                         break;
                      case Level::block:
-                            m_container.push_back(new Block(i * SPRITE_WIDTH, j * SPRITE_HEIGHT, this));
-                            break;
+                        m_container.push_back(new Block(i * SPRITE_WIDTH, j * SPRITE_HEIGHT, this));
+                        break;
                      case Level::star_goodie_block:
-                            m_container.push_back(new SpecialBlock(i * SPRITE_WIDTH, j * SPRITE_HEIGHT, this, star));
-                            break;
+                        m_container.push_back(new SpecialBlock(i * SPRITE_WIDTH, j * SPRITE_HEIGHT, this, star));
+                        break;
                      case Level::mushroom_goodie_block:
-                            m_container.push_back(new SpecialBlock(i * SPRITE_WIDTH, j * SPRITE_HEIGHT, this, mushroom));
-                            break;
+                        m_container.push_back(new SpecialBlock(i * SPRITE_WIDTH, j * SPRITE_HEIGHT, this, mushroom));
+                        break;
                      case Level::flower_goodie_block:
                         m_container.push_back(new SpecialBlock(i * SPRITE_WIDTH, j * SPRITE_HEIGHT, this, flower));
                         break;
@@ -101,10 +101,6 @@ int StudentWorld::init()
 
 int StudentWorld::move()
 {
-    // This code is here merely to allow the game to build, run, and terminate after you hit enter.
-    // Notice that the return value GWSTATUS_PLAYER_DIED will cause our framework to end the current level.
-    //
-  //  decLives();
     
     m_peachPtr->doSomething();
     
